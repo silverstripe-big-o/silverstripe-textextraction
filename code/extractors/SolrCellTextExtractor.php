@@ -72,6 +72,27 @@ class SolrCellTextExtractor extends FileTextExtractor {
 				SS_Log::NOTICE
 			);
 			return null;
+		} catch(Guzzle\Http\Exception\ServerErrorResponseException $e){
+			//catch other errors that Tika can throw but are not caught and break Solr search query.
+			SS_Log::log(
+				sprintf(
+					'Tika Server cannot extract text (bad or incompatible format) from "%s" (message: %s)', 
+					$path, 
+					$e->getMessage()
+				),
+				SS_Log::NOTICE
+			);
+			return null;
+		} catch(Exception $e){
+			SS_Log::log(
+				sprintf(
+					'Exception caught from "%s" (message: %s)', 
+					$path, 
+					$e->getMessage()
+				),
+				SS_Log::NOTICE
+			);
+			return null;
 		}
 		// Use preg match to avoid SimpleXML running out of memory on large text nodes
 		preg_match(
